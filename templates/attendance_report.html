@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Report</title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         SHEETJS - EXCEL LIBRARY
+    ====================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+    </script>
+
+
+    <!-- =====================================================
+         CUSTOM CSS
+    ====================================================== -->
+
+    <style>
+
+        body {
+
+            background-color: #f8f9fa;
+
+        }
+
+
+        /* Main report card */
+
+        .report-card {
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+        }
+
+
+        /* Header */
+
+        .report-header {
+
+            background-color: #12c2e9;
+
+            color: white;
+
+        }
+
+
+        .report-title {
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* Table */
+
+        .attendance-table th {
+
+            background-color: #212529;
+
+            color: white;
+
+            text-align: center;
+
+            vertical-align: middle;
+
+        }
+
+
+        .attendance-table td {
+
+            text-align: center;
+
+            vertical-align: middle;
+
+        }
+
+
+        /* Attendance percentage */
+
+        .percentage-good {
+
+            background-color: #198754;
+
+            color: white;
+
+            padding: 7px 12px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            display: inline-block;
+
+        }
+
+
+        .percentage-low {
+
+            background-color: #dc3545;
+
+            color: white;
+
+            padding: 7px 12px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            display: inline-block;
+
+        }
+
+
+        /* Excel preview */
+
+        .excel-preview {
+
+            display: none;
+
+            margin-top: 25px;
+
+        }
+
+
+        .excel-preview-title {
+
+            background-color: #217346;
+
+            color: white;
+
+            padding: 12px;
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+
+        .excel-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            background-color: white;
+
+        }
+
+
+        .excel-table th {
+
+            background-color: #217346;
+
+            color: white;
+
+            border: 1px solid #777;
+
+            padding: 10px;
+
+            text-align: center;
+
+        }
+
+
+        .excel-table td {
+
+            border: 1px solid #999;
+
+            padding: 10px;
+
+            text-align: center;
+
+        }
+
+
+        .excel-table tr:nth-child(even) {
+
+            background-color: #f2f2f2;
+
+        }
+
+
+        .excel-good {
+
+            color: green;
+
+            font-weight: bold;
+
+        }
+
+
+        .excel-low {
+
+            color: red;
+
+            font-weight: bold;
+
+        }
+
+
+        /* Print */
+
+        @media print {
+
+            .no-print {
+
+                display: none !important;
+
+            }
+
+
+            body {
+
+                background: white;
+
+            }
+
+
+            .card {
+
+                box-shadow: none !important;
+
+                border: none !important;
+
+            }
+
+
+            .excel-preview {
+
+                display: none !important;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+====================================================== -->
+
+<nav class="navbar navbar-dark bg-info no-print">
+
+    <div class="container">
+
+
+        <span class="navbar-brand">
+
+            📊 Attendance Report
+
+        </span>
+
+
+        <a
+            href="/teacher_dashboard"
+            class="btn btn-light">
+
+            ⬅ Dashboard
+
+        </a>
+
+
+    </div>
+
+</nav>
+
+
+
+<!-- =====================================================
+     MAIN CONTAINER
+====================================================== -->
+
+<div class="container mt-4 mb-5">
+
+
+    <div class="card shadow report-card">
+
+
+        <!-- =================================================
+             REPORT HEADER
+        ================================================== -->
+
+        <div class="card-header report-header p-3">
+
+
+            <div
+                class="d-flex
+                       justify-content-between
+                       align-items-center
+                       flex-wrap">
+
+
+                <!-- TITLE -->
+
+                <div>
+
+                    <span class="report-title">
+
+                        📊 Student Attendance Report
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BUTTONS
+                ================================================== -->
+
+                <div class="mt-2 mt-md-0 no-print">
+
+
+                    <!-- DOWNLOAD EXCEL -->
+
+                    <button
+                        type="button"
+                        class="btn btn-success me-2"
+                        onclick="downloadExcel()">
+
+                        📥 Download Excel
+
+                    </button>
+
+
+
+                    <!-- SHOW EXCEL -->
+
+                    <button
+                        type="button"
+                        class="btn btn-warning me-2"
+                        onclick="showExcel()">
+
+                        👁️ Show Excel
+
+                    </button>
+
+
+
+                    <!-- PRINT -->
+
+                    <button
+                        type="button"
+                        class="btn btn-dark"
+                        onclick="printReport()">
+
+                        🖨️ Print
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             REPORT BODY
+        ================================================== -->
+
+        <div class="card-body">
+
+
+            {% if report %}
+
+
+            <!-- =================================================
+                 ATTENDANCE TABLE
+            ================================================== -->
+
+            <div class="table-responsive">
+
+
+                <table
+                    id="attendanceTable"
+                    class="table table-bordered
+                           table-hover table-striped
+                           attendance-table">
+
+
+                    <!-- TABLE HEADER -->
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Roll No
+                            </th>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Present
+                            </th>
+
+                            <th>
+                                Absent
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Attendance %
+                            </th>
+
+                            <th>
+                                Absent Dates
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <!-- TABLE BODY -->
+
+                    <tbody>
+
+
+                    {% for row in report %}
+
+
+                        <tr>
+
+
+                            <!-- ROLL NO -->
+
+                            <td>
+
+                                {{ row.roll_no }}
+
+                            </td>
+
+
+
+                            <!-- STUDENT NAME -->
+
+                            <td>
+
+                                {{ row.student_name }}
+
+                            </td>
+
+
+
+                            <!-- PRESENT -->
+
+                            <td class="text-success fw-bold">
+
+                                {{ row.present_days }}
+
+                            </td>
+
+
+
+                            <!-- ABSENT -->
+
+                            <td class="text-danger fw-bold">
+
+                                {{ row.absent_days }}
+
+                            </td>
+
+
+
+                            <!-- TOTAL -->
+
+                            <td>
+
+                                {{ row.total_days }}
+
+                            </td>
+
+
+
+                            <!-- ATTENDANCE % -->
+
+                            <td>
+
+
+                                {% if row.percentage >= 75 %}
+
+
+                                    <span
+                                        class="percentage-good">
+
+                                        {{ "%.2f"|format(row.percentage) }}%
+
+                                    </span>
+
+
+                                {% else %}
+
+
+                                    <span
+                                        class="percentage-low">
+
+                                        {{ "%.2f"|format(row.percentage) }}%
+
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <!-- ABSENT DATES -->
+
+                            <td>
+
+
+                                {% if row.absent_dates == "No Absent" %}
+
+
+                                    <span
+                                        class="text-success fw-bold">
+
+                                        No Absent
+
+                                    </span>
+
+
+                                {% else %}
+
+
+                                    <small>
+
+                                        {{ row.absent_dates }}
+
+                                    </small>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            {% else %}
+
+
+                <!-- =================================================
+                     NO DATA
+                ================================================== -->
+
+                <div
+                    class="alert alert-warning text-center">
+
+                    No Attendance Data Found.
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         EXCEL PREVIEW
+    ====================================================== -->
+
+    {% if report %}
+
+
+    <div
+        id="excelPreview"
+        class="card shadow excel-preview">
+
+
+        <!-- EXCEL TITLE -->
+
+        <div class="excel-preview-title">
+
+            📗 Excel Attendance Sheet
+
+        </div>
+
+
+
+        <div class="card-body p-0">
+
+
+            <div class="table-responsive">
+
+
+                <table
+                    id="excelTable"
+                    class="excel-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Roll No
+                            </th>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Present
+                            </th>
+
+                            <th>
+                                Absent
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Attendance %
+                            </th>
+
+                            <th>
+                                Absent Dates
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for row in report %}
+
+
+                        <tr>
+
+
+                            <td>
+
+                                {{ row.roll_no }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ row.student_name }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ row.present_days }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ row.absent_days }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ row.total_days }}
+
+                            </td>
+
+
+                            <td>
+
+
+                                {% if row.percentage >= 75 %}
+
+                                    <span
+                                        class="excel-good">
+
+                                        {{ "%.2f"|format(row.percentage) }}%
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span
+                                        class="excel-low">
+
+                                        {{ "%.2f"|format(row.percentage) }}%
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <td>
+
+                                {{ row.absent_dates }}
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+
+// =====================================================
+// DOWNLOAD EXCEL
+// =====================================================
+
+function downloadExcel() {
+
+
+    const table =
+        document.getElementById(
+            "attendanceTable"
+        );
+
+
+    if (!table) {
+
+        alert(
+            "No attendance data available."
+        );
+
+        return;
+
+    }
+
+
+    // =================================================
+    // EXCEL DATA
+    // =================================================
+
+    const data = [];
+
+
+    // Header
+
+    data.push([
+
+        "Roll No",
+
+        "Student Name",
+
+        "Present",
+
+        "Absent",
+
+        "Total",
+
+        "Attendance %",
+
+        "Absent Dates"
+
+    ]);
+
+
+
+    // Get rows
+
+    const rows =
+        table.querySelectorAll(
+            "tbody tr"
+        );
+
+
+
+    rows.forEach(function(row) {
+
+
+        const cells =
+            row.querySelectorAll("td");
+
+
+        if (cells.length < 7) {
+
+            return;
+
+        }
+
+
+        // Attendance percentage
+
+        let percentageText =
+            cells[5]
+                .innerText
+                .trim();
+
+
+        let percentage =
+            parseFloat(
+
+                percentageText
+                    .replace("%", "")
+                    .trim()
+
+            );
+
+
+        if (isNaN(percentage)) {
+
+            percentage = 0;
+
+        }
+
+
+        // Excel percentage
+
+        let excelPercentage =
+            percentage / 100;
+
+
+
+        data.push([
+
+            cells[0]
+                .innerText
+                .trim(),
+
+            cells[1]
+                .innerText
+                .trim(),
+
+            parseInt(
+                cells[2]
+                    .innerText
+                    .trim()
+            ) || 0,
+
+            parseInt(
+                cells[3]
+                    .innerText
+                    .trim()
+            ) || 0,
+
+            parseInt(
+                cells[4]
+                    .innerText
+                    .trim()
+            ) || 0,
+
+            excelPercentage,
+
+            cells[6]
+                .innerText
+                .trim()
+
+        ]);
+
+    });
+
+
+
+    // =================================================
+    // CREATE WORKSHEET
+    // =================================================
+
+    const worksheet =
+        XLSX.utils.aoa_to_sheet(
+            data
+        );
+
+
+
+    // =================================================
+    // COLUMN WIDTH
+    // =================================================
+
+    worksheet["!cols"] = [
+
+        {
+            wch: 12
+        },
+
+        {
+            wch: 25
+        },
+
+        {
+            wch: 12
+        },
+
+        {
+            wch: 12
+        },
+
+        {
+            wch: 12
+        },
+
+        {
+            wch: 18
+        },
+
+        {
+            wch: 40
+        }
+
+    ];
+
+
+
+    // =================================================
+    // FORMAT ATTENDANCE %
+    // =================================================
+
+    for (
+
+        let row = 2;
+
+        row <= data.length;
+
+        row++
+
+    ) {
+
+
+        const cell =
+            worksheet[
+                "F" + row
+            ];
+
+
+        if (cell) {
+
+            cell.t = "n";
+
+            cell.z = "0.00%";
+
+        }
+
+    }
+
+
+
+    // =================================================
+    // CREATE WORKBOOK
+    // =================================================
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+
+    XLSX.utils.book_append_sheet(
+
+        workbook,
+
+        worksheet,
+
+        "Attendance Report"
+
+    );
+
+
+
+    // =================================================
+    // DOWNLOAD
+    // =================================================
+
+    XLSX.writeFile(
+
+        workbook,
+
+        "Student_Attendance_Report.xlsx"
+
+    );
+
+}
+
+
+
+// =====================================================
+// SHOW EXCEL
+// =====================================================
+
+function showExcel() {
+
+
+    const preview =
+        document.getElementById(
+            "excelPreview"
+        );
+
+
+    if (!preview) {
+
+        alert(
+            "No attendance data available."
+        );
+
+        return;
+
+    }
+
+
+    // Show Excel preview
+
+    if (
+        preview.style.display ===
+        "none" ||
+        preview.style.display === ""
+    ) {
+
+
+        preview.style.display =
+            "block";
+
+
+        // Scroll to Excel
+
+        setTimeout(function() {
+
+            preview.scrollIntoView({
+
+                behavior: "smooth",
+
+                block: "start"
+
+            });
+
+        }, 100);
+
+
+    } else {
+
+
+        // Hide Excel
+
+        preview.style.display =
+            "none";
+
+    }
+
+}
+
+
+
+// =====================================================
+// PRINT
+// =====================================================
+
+function printReport() {
+
+    window.print();
+
+}
+
+
+</script>
+
+
+
+<!-- =====================================================
+     BOOTSTRAP JS
+====================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+</body>
+
+</html>

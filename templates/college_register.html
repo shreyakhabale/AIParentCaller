@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>College Registration</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow-lg">
+
+<div class="card-header bg-success text-white text-center">
+
+<h2>🏫 AI Student Absence Notification System</h2>
+
+<h5 class="mt-2">College Registration</h5>
+
+</div>
+
+<div class="card-body">
+
+{% if registration_success %}
+<div class="alert alert-success text-center border-success">
+    <h4>🎉 College Account Created Successfully!</h4>
+    <hr>
+    <p class="mb-2">College: <strong>{{ college_name }}</strong></p>
+    <p class="mb-1">Your College ID is:</p>
+    <h2 class="fw-bold">{{ college_login_id }}</h2>
+    <p class="mt-3 mb-0">
+        ⚠️ Save this College ID (serial number). It is required for College and Android App login.
+    </p>
+    <hr>
+    <a href="{{ url_for('college_login') }}" class="btn btn-primary">
+        Go to College Login
+    </a>
+</div>
+{% endif %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="alert alert-success">
+{{ message }}
+</div>
+
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">College Name</label>
+
+<input
+type="text"
+name="college_name"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">College Code</label>
+<div class="form-text">Official college code. Your Login College ID will be generated automatically after registration.</div>
+
+<input
+type="text"
+name="college_code"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-12 mb-3">
+
+<label class="form-label">Address</label>
+
+<textarea
+name="address"
+rows="3"
+class="form-control"></textarea>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Email</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Phone</label>
+
+<input
+type="text"
+name="phone"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Calling Number</label>
+
+<input
+type="text"
+name="calling_number"
+class="form-control">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Username</label>
+
+<input
+type="text"
+name="username"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-12 mb-3">
+
+<label>Password</label>
+
+<input
+type="password"
+name="password"
+class="form-control"
+required>
+
+</div>
+
+</div>
+
+<button
+class="btn btn-success w-100">
+
+Create College Account
+
+</button>
+
+</form>
+
+<hr>
+
+<div class="text-center">
+
+Already have a College Account?
+
+<br><br>
+
+<a
+href="/college_login"
+class="btn btn-primary">
+
+College Login
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

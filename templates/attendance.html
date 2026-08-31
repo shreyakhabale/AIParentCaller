@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Management</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-warning">
+
+    <div class="container">
+
+        <span class="navbar-brand">
+            📅 Attendance Management
+        </span>
+
+        <a href="/teacher_dashboard"
+           class="btn btn-light">
+            ⬅ Dashboard
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-warning">
+
+            <h3>
+                📅 Take Attendance
+            </h3>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <!-- FLASH MESSAGE -->
+
+            {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert alert-success alert-dismissible fade show">
+
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+            {% endwith %}
+
+
+            <!-- ATTENDANCE FORM -->
+
+            <form method="POST">
+
+
+                <!-- CLASS INFORMATION -->
+
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Attendance Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="attendance_date"
+                            value="{{ today }}"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Course
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="{{ course }}"
+                            readonly>
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Academic Year
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="{{ academic_year }}"
+                            readonly>
+
+                    </div>
+
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label">
+                            Year
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            value="{{ year }}"
+                            readonly>
+
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- ABSENT STUDENTS -->
+
+                <label class="form-label fs-5">
+
+                    Absent Student Roll Numbers
+
+                </label>
+
+
+                <textarea
+                    name="absent_rolls"
+                    id="absent_rolls"
+                    rows="4"
+                    class="form-control"
+                    placeholder>
+                </textarea>
+
+
+                <div class="form-text">
+
+                    Enter Roll Numbers separated by comma (,)
+
+                </div>
+
+
+                <br>
+
+
+                <!-- BUTTONS -->
+
+                <div class="d-flex gap-3 flex-wrap">
+
+
+                    <!-- NO ABSENT STUDENT -->
+
+                    <button
+                        type="submit"
+                        name="no_absent"
+                        value="1"
+                        class="btn btn-primary btn-lg"
+                        onclick="return confirmNoAbsent();">
+
+                        ✅ No Absent Student
+
+                    </button>
+
+
+                    <!-- SAVE NORMAL ATTENDANCE -->
+
+                    <button
+                        type="submit"
+                        name="save_attendance"
+                        value="1"
+                        class="btn btn-success btn-lg">
+
+                        💾 Save Attendance
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function confirmNoAbsent() {
+
+    document.getElementById("absent_rolls").value = "";
+
+    return confirm(
+        "Are you sure you want to mark all students as Present for today?"
+    );
+
+}
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Prepare Parent Call</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-success">
+
+    <div class="container">
+
+        <span class="navbar-brand">
+            📞 Parent Call
+        </span>
+
+        <a
+            href="{{ url_for('today_absent') }}"
+            class="btn btn-light">
+
+            ⬅ Back
+
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+
+            <h3 class="mb-0">
+                📞 Parent Call Preparation
+            </h3>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- STUDENT DETAILS -->
+
+            <h5>
+                👨‍🎓 Student Details
+            </h5>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+
+                    <strong>Student Name:</strong>
+
+                    {{ student.student_name }}
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>Parent Name:</strong>
+
+                    {{ student.parent_name }}
+
+                </div>
+
+            </div>
+
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+
+                    <strong>Parent Mobile:</strong>
+
+                    {{ student.parent_mobile }}
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <strong>College:</strong>
+
+                    {{ college_name }}
+
+                </div>
+
+            </div>
+
+
+            <!-- AI SCRIPT -->
+
+            <h5>
+                🤖 AI Calling Script
+            </h5>
+
+            <hr>
+
+
+            <div class="alert alert-info">
+
+                <p
+                    class="mb-0"
+                    style="white-space: pre-line;">
+
+                    {{ final_script }}
+
+                </p>
+
+            </div>
+
+
+            <!-- VOICE -->
+
+            {% if settings and settings.voice_file %}
+
+            <div class="alert alert-secondary">
+
+                🎤 <strong>Voice File:</strong>
+
+                {{ settings.voice_file }}
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="alert alert-warning">
+
+                ⚠️ This is a free browser voice preview.
+                It does not place a real mobile-network call.
+
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="playVoicePreview()">
+
+                    🔊 Play Voice Preview
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="window.speechSynthesis.cancel()">
+
+                    ⏹ Stop Voice
+
+                </button>
+
+                <a
+                    href="{{ url_for('parent_calling_page') }}"
+                    class="btn btn-secondary">
+
+                    ⬅ Back to Parent Calling
+
+                </a>
+
+            </div>
+
+            <script>
+            function playVoicePreview() {
+                if (!("speechSynthesis" in window)) {
+                    alert("Browser voice synthesis is not supported on this device.");
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+
+                const text = {{ final_script | tojson }};
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = "mr-IN";
+                utterance.rate = 0.88;
+                utterance.pitch = 1.0;
+
+                const voices = window.speechSynthesis.getVoices();
+                const voice =
+                    voices.find(v => (v.lang || "").toLowerCase() === "mr-in")
+                    || voices.find(v => (v.lang || "").toLowerCase().startsWith("mr"))
+                    || voices.find(v => (v.lang || "").toLowerCase() === "hi-in")
+                    || voices.find(v => (v.lang || "").toLowerCase().startsWith("hi"));
+
+                if (voice) {
+                    utterance.voice = voice;
+                    utterance.lang = voice.lang;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
+            </script>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
